@@ -1,0 +1,3 @@
+spotify:
+  endpoint: spotify_api_endpoint
+  token: spotify_token_lah 
