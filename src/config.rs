@@ -7,8 +7,10 @@ use serde_yaml::from_reader;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct SpotifyConfig {
-    pub token: String,
     pub endpoint: String,
+    pub auth_endpoint: String,
+    pub client_id: String,
+    pub client_secret: String,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]

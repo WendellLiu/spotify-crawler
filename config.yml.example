@@ -1,3 +1,5 @@
 spotify:
   endpoint: spotify_api_endpoint
-  token: spotify_token_lah 
+  auth_endpoint: 'https://accounts.spotify.com/api'
+  client_id: spotify_client_id 
+  client_secret: spotify_client_secret 
