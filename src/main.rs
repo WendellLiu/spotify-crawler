@@ -11,7 +11,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let spotify_client = SpotifyClient::new().await?;
 
-    let resp = spotify_client.get_new_releases(Country::TW).await?;
+    let resp = spotify_client.get_new_releases(Some(Country::TW)).await?;
+    println!("{:?}", resp);
+
+    let resp = spotify_client.get_new_releases(None).await?;
     println!("{:?}", resp);
 
     Ok(())

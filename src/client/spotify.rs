@@ -88,16 +88,22 @@ impl SpotifyClient {
     fn get<T: Serialize + ?Sized>(
         &self,
         namespace: String,
-        query: &std::collections::HashMap<&str, Box<T>>,
+        query: Option<std::collections::HashMap<&str, Box<T>>>,
     ) -> RequestBuilder {
         let client = Client::new();
         let token = format!("Bearer {}", self.token);
         let url = format!("{}{}", self.endpoint, namespace);
 
+        let q = match query {
+            None => return client.get(&url).header(AUTHORIZATION, token),
+            Some(qu) => qu,
+        };
+
         let mut query_map = HashMap::new();
-        for (k, v) in query.iter() {
+        for (k, v) in q.iter() {
             query_map.insert(*k, v);
         }
+
         client
             .get(&url)
             .header(AUTHORIZATION, token)
@@ -113,11 +119,17 @@ impl SpotifyClient {
 
     pub async fn get_new_releases(
         &self,
-        country: Country,
+        country: Option<Country>,
     ) -> Result<NewReleaseResponse, reqwest::Error> {
-        let mut query = HashMap::new();
-        query.insert("country", Box::new(country));
-        self.get(String::from("/v1/browse/new-releases"), &query)
+        let query = match country {
+            Some(coun) => {
+                let mut q = HashMap::new();
+                q.insert("country", Box::new(coun));
+                Some(q)
+            }
+            None => None,
+        };
+        self.get(String::from("/v1/browse/new-releases"), query)
             .send()
             .await?
             .json()
