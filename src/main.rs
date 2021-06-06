@@ -1,7 +1,7 @@
 mod client;
 mod config;
 
-use client::spotify::SpotifyClient;
+use client::spotify::{Country, SpotifyClient};
 use config::{SystemConfig, SYSTEM_CONFIG};
 
 #[tokio::main]
@@ -11,10 +11,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let spotify_client = SpotifyClient::new().await?;
 
-    println!("{:?}", spotify_client);
-
-    //let resp = spotify_client.get_new_releases().await?;
-    //println!("{:#?}", resp);
+    let resp = spotify_client.get_new_releases(Country::TW).await?;
+    println!("{:?}", resp);
 
     Ok(())
 }

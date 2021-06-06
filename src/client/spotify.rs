@@ -28,16 +28,35 @@ enum TokenResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct NewReleaseResponse {}
+pub struct AblumItem {
+    pub name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Albums {
+    pub items: Vec<AblumItem>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NewReleaseResponse {
+    albums: Albums,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Country {
+    SE,
+    TW,
+}
 
 impl SpotifyClient {
     pub async fn new() -> Result<SpotifyClient, reqwest::Error> {
         let system_config = SystemConfig::global();
-        let endpoint = system_config.spotify.auth_endpoint.clone();
+        let auth_endpoint = system_config.spotify.auth_endpoint.clone();
+        let endpoint = system_config.spotify.endpoint.clone();
         let client_id = system_config.spotify.client_id.clone();
         let client_secret = system_config.spotify.client_secret.clone();
 
-        let url = format!("{}{}", endpoint, "/token");
+        let url = format!("{}{}", auth_endpoint, "/token");
         let credential = encode(format!("{}:{}", client_id, client_secret));
         let authorization_content = format!("Basic {}", credential);
 
@@ -66,11 +85,23 @@ impl SpotifyClient {
         })
     }
 
-    fn get(&self, namespace: String) -> RequestBuilder {
+    fn get<T: Serialize + ?Sized>(
+        &self,
+        namespace: String,
+        query: &std::collections::HashMap<&str, Box<T>>,
+    ) -> RequestBuilder {
         let client = Client::new();
         let token = format!("Bearer {}", self.token);
         let url = format!("{}{}", self.endpoint, namespace);
-        client.get(&url).header(AUTHORIZATION, token)
+
+        let mut query_map = HashMap::new();
+        for (k, v) in query.iter() {
+            query_map.insert(*k, v);
+        }
+        client
+            .get(&url)
+            .header(AUTHORIZATION, token)
+            .query(&query_map)
     }
 
     fn post<Body: Serialize>(&self, namespace: String, body: Body) -> RequestBuilder {
@@ -80,8 +111,13 @@ impl SpotifyClient {
         client.post(&url).header(AUTHORIZATION, token).json(&body)
     }
 
-    pub async fn get_new_releases(&self) -> Result<NewReleaseResponse, reqwest::Error> {
-        self.get(String::from("/v1/browse/new-releases"))
+    pub async fn get_new_releases(
+        &self,
+        country: Country,
+    ) -> Result<NewReleaseResponse, reqwest::Error> {
+        let mut query = HashMap::new();
+        query.insert("country", Box::new(country));
+        self.get(String::from("/v1/browse/new-releases"), &query)
             .send()
             .await?
             .json()
