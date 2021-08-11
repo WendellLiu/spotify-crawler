@@ -14,8 +14,14 @@ pub struct SpotifyConfig {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct ElasticSearchConfig {
+    pub endpoint: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct SystemConfig {
     pub spotify: SpotifyConfig,
+    pub elasticsearch: ElasticSearchConfig,
 }
 
 impl SystemConfig {

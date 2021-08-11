@@ -3,3 +3,5 @@ spotify:
   auth_endpoint: 'https://accounts.spotify.com/api'
   client_id: spotify_client_id 
   client_secret: spotify_client_secret 
+elasticsearch:
+  endpoint: elasticsearch_api_endpoint

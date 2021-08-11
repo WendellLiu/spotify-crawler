@@ -1,8 +1,11 @@
 mod client;
 mod config;
+mod dto;
+mod storage;
 
 use client::spotify::{Country, SpotifyClient};
 use config::{SystemConfig, SYSTEM_CONFIG};
+use dto::new_release::NewRelease;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -16,6 +19,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let resp = spotify_client.get_new_releases(None).await?;
     println!("{:?}", resp);
+
+    let new_release = NewRelease {
+        name: resp.albums.items[0].name.clone(),
+    };
+
+    new_release.create_doc().await?;
 
     Ok(())
 }

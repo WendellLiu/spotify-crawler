@@ -39,7 +39,7 @@ pub struct Albums {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct NewReleaseResponse {
-    albums: Albums,
+    pub albums: Albums,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
