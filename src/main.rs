@@ -3,6 +3,8 @@ mod config;
 mod dto;
 mod storage;
 
+use chrono::prelude::*;
+
 use client::spotify::{Country, SpotifyClient};
 use config::{SystemConfig, SYSTEM_CONFIG};
 use dto::new_release::NewRelease;
@@ -21,6 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{:?}", resp);
 
     let new_release = NewRelease {
+        timestamp: Utc::now(),
         name: resp.albums.items[0].name.clone(),
     };
 

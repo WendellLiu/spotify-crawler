@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use elasticsearch::IndexParts;
 use serde::{Deserialize, Serialize};
 
@@ -7,6 +8,8 @@ static NEW_RELEASES_INDEX: &'static str = "new_releases";
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct NewRelease {
+    #[serde(rename = "@timestamp")]
+    pub timestamp: DateTime<Utc>,
     pub name: String,
 }
 
