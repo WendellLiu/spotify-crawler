@@ -28,8 +28,31 @@ enum TokenResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct ImageObject {
+    pub height: u32,
+    pub width: u32,
+    pub url: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ExternalUrlsObject {
+    pub spotify: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct AlbumItem {
+    pub id: String,
     pub name: String,
+    pub external_urls: ExternalUrlsObject,
+    #[serde(default)]
+    pub genres: Vec<String>,
+    #[serde(default)]
+    pub images: Vec<ImageObject>,
+    #[serde(default)]
+    pub label: String,
+    pub release_date: String,
+    pub release_date_precision: String,
+    pub total_tracks: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

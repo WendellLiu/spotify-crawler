@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use elasticsearch::{BulkOperation, BulkParts, IndexParts};
 use serde::{Deserialize, Serialize};
 
-use crate::client::spotify::{AlbumItem, Albums};
+use crate::client::spotify::{AlbumItem, Albums, ExternalUrlsObject, ImageObject};
 use crate::storage::es::EsClient;
 
 static NEW_RELEASES_INDEX: &'static str = "new_releases";
@@ -12,14 +12,33 @@ static NEW_RELEASES_INDEX: &'static str = "new_releases";
 pub struct NewReleaseItem {
     #[serde(rename = "@timestamp")]
     pub timestamp: DateTime<Utc>,
+    pub id: String,
     pub name: String,
+    pub external_urls: ExternalUrlsObject,
+    #[serde(default)]
+    pub genres: Vec<String>,
+    #[serde(default)]
+    pub images: Vec<ImageObject>,
+    #[serde(default)]
+    pub label: String,
+    pub release_date: String,
+    pub release_date_precision: String,
+    pub total_tracks: u32,
 }
 
 impl From<AlbumItem> for NewReleaseItem {
     fn from(item: AlbumItem) -> Self {
         NewReleaseItem {
             timestamp: Utc::now(),
-            name: item.name.clone(),
+            id: item.id,
+            name: item.name,
+            external_urls: item.external_urls,
+            genres: item.genres,
+            images: item.images,
+            label: item.label,
+            release_date: item.release_date,
+            release_date_precision: item.release_date_precision,
+            total_tracks: item.total_tracks,
         }
     }
 }
