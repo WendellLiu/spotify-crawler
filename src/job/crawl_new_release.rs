@@ -1,5 +1,5 @@
 use crate::client::spotify::{Country, SpotifyClient};
-use crate::dto::new_release::NewRelease;
+use crate::dto::new_release::NewReleases;
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let spotify_client = SpotifyClient::new().await?;
@@ -10,11 +10,11 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let resp = spotify_client.get_new_releases(None).await?;
     println!("{:?}", resp);
 
-    let new_release = NewRelease {
-        payload: (&resp.albums.items[0]).into(),
+    let new_releases = NewReleases {
+        payload: resp.albums.into(),
     };
 
-    new_release.create_doc().await?;
+    new_releases.create_doc().await?;
 
     Ok(())
 }
