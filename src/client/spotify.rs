@@ -28,13 +28,13 @@ enum TokenResponse {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct AblumItem {
+pub struct AlbumItem {
     pub name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Albums {
-    pub items: Vec<AblumItem>,
+    pub items: Vec<AlbumItem>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
