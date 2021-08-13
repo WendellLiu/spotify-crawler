@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use elasticsearch::{BulkOperation, BulkParts, IndexParts};
 use serde::{Deserialize, Serialize};
 
-use crate::client::spotify::{AlbumItem, Country, ExternalUrlsObject, ImageObject};
+use crate::client::spotify::{AlbumItem, ArtistObject, Country, ExternalUrlsObject, ImageObject};
 use crate::storage::es::EsClient;
 
 static NEW_RELEASES_INDEX: &'static str = "new_releases";
@@ -30,12 +30,17 @@ pub struct NewReleaseItem {
     pub release_date_precision: String,
     pub total_tracks: u32,
     pub metadata: Metadata,
+    pub artists: Vec<ArtistObject>,
 }
 
 impl From<&NewRelease> for NewReleaseItem {
     fn from(new_release: &NewRelease) -> Self {
         let item = &new_release.payload;
         NewReleaseItem {
+            metadata: Metadata {
+                country: new_release.country.clone(),
+            },
+            artists: item.artists.clone(),
             timestamp: Utc::now(),
             id: item.id.clone(),
             name: item.name.clone(),
@@ -46,9 +51,6 @@ impl From<&NewRelease> for NewReleaseItem {
             release_date: item.release_date.clone(),
             release_date_precision: item.release_date_precision.clone(),
             total_tracks: item.total_tracks,
-            metadata: Metadata {
-                country: new_release.country.clone(),
-            },
         }
     }
 }
@@ -63,6 +65,7 @@ impl From<&NewReleases> for Vec<NewReleaseItem> {
                 timestamp: Utc::now(),
                 id: item.id.clone(),
                 name: item.name.clone(),
+                artists: item.artists.clone(),
                 external_urls: item.external_urls.clone(),
                 genres: item.genres.clone(),
                 images: item.images.clone(),

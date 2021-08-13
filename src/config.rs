@@ -5,8 +5,6 @@ use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_reader;
 
-use crate::client::spotify::Country;
-
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct SpotifyConfig {
     pub endpoint: String,

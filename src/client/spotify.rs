@@ -40,6 +40,17 @@ pub struct ExternalUrlsObject {
     pub spotify: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ArtistObject {
+    pub id: String,
+    pub name: String,
+    pub external_urls: ExternalUrlsObject,
+    #[serde(default)]
+    pub images: Vec<ImageObject>,
+    #[serde(default)]
+    pub genres: Vec<String>,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AlbumItem {
     pub id: String,
@@ -54,6 +65,7 @@ pub struct AlbumItem {
     pub release_date: String,
     pub release_date_precision: String,
     pub total_tracks: u32,
+    pub artists: Vec<ArtistObject>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
