@@ -2,6 +2,7 @@ use base64::encode;
 use reqwest::header::AUTHORIZATION;
 use reqwest::{Client, RequestBuilder};
 use serde::{Deserialize, Serialize};
+use strum_macros::EnumString;
 
 use std::collections::HashMap;
 
@@ -27,14 +28,14 @@ enum TokenResponse {
     },
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ImageObject {
     pub height: u32,
     pub width: u32,
     pub url: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ExternalUrlsObject {
     pub spotify: String,
 }
@@ -65,10 +66,23 @@ pub struct NewReleaseResponse {
     pub albums: Albums,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, EnumString, Clone)]
 pub enum Country {
     SE,
     TW,
+    US,
+    GB,
+    JP,
+    KR,
+    CN,
+    TH,
+    DE,
+    FR,
+    MY,
+    ZA,
+    DK,
+    EG,
+    CA,
 }
 
 impl SpotifyClient {

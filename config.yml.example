@@ -5,3 +5,8 @@ spotify:
   client_secret: spotify_client_secret 
 elasticsearch:
   endpoint: elasticsearch_api_endpoint
+event_payload:
+  new_releases:
+    countries:
+      - TW
+      - SE

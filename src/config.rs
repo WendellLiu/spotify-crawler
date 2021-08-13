@@ -5,6 +5,8 @@ use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_reader;
 
+use crate::client::spotify::Country;
+
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct SpotifyConfig {
     pub endpoint: String,
@@ -19,9 +21,20 @@ pub struct ElasticSearchConfig {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct NewReleasesConfig {
+    pub countries: Vec<String>,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct EventPayloadConfig {
+    pub new_releases: NewReleasesConfig,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct SystemConfig {
     pub spotify: SpotifyConfig,
     pub elasticsearch: ElasticSearchConfig,
+    pub event_payload: EventPayloadConfig,
 }
 
 impl SystemConfig {
