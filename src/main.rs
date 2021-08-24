@@ -13,7 +13,7 @@ use job::crawl_new_release;
 #[clap(setting = AppSettings::ColoredHelp)]
 struct Opts {
     /// file path of config
-    #[clap(short, long, default_value = "crawler.conf")]
+    #[clap(short, long, default_value = "config.yml")]
     config: String,
     #[clap(subcommand)]
     subcmd: SubCommand,
@@ -32,10 +32,10 @@ struct NewRelease {}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let system_config_instance = SystemConfig::new();
-    SYSTEM_CONFIG.set(system_config_instance).unwrap();
-
     let opts: Opts = Opts::parse();
+
+    let system_config_instance = SystemConfig::new(opts.config);
+    SYSTEM_CONFIG.set(system_config_instance).unwrap();
 
     match opts.subcmd {
         SubCommand::NewRelease => {

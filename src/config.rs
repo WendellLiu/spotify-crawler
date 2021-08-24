@@ -42,8 +42,8 @@ impl SystemConfig {
             .expect("system config is not initialized.")
     }
 
-    pub fn new() -> SystemConfig {
-        let f = File::open("./config.yml").expect("can not read the config file");
+    pub fn new(path: String) -> SystemConfig {
+        let f = File::open(path).expect("can not read the config file");
         let reader = BufReader::new(f);
 
         let contents: SystemConfig =
