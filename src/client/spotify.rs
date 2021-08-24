@@ -97,6 +97,11 @@ pub enum Country {
     CA,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GenreSeedsResponse {
+    pub genres: Vec<String>,
+}
+
 impl SpotifyClient {
     pub async fn new() -> Result<SpotifyClient, reqwest::Error> {
         let system_config = SystemConfig::global();
@@ -183,5 +188,15 @@ impl SpotifyClient {
             .await?
             .json()
             .await
+    }
+    pub async fn get_genre_seeds(&self) -> Result<GenreSeedsResponse, reqwest::Error> {
+        self.get::<()>(
+            String::from("/v1/recommendations/available-genre-seeds"),
+            None,
+        )
+        .send()
+        .await?
+        .json()
+        .await
     }
 }
