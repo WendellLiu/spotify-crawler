@@ -1,6 +1,8 @@
-use chrono::{DateTime, Utc};
+use std::fmt;
 
+use chrono::{DateTime, Utc};
 use elasticsearch::{BulkOperation, BulkParts, IndexParts};
+//use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
 
 use crate::client::spotify::{AlbumItem, ArtistObject, Country, ExternalUrlsObject, ImageObject};
@@ -8,12 +10,12 @@ use crate::storage::es::EsClient;
 
 static NEW_RELEASES_INDEX: &'static str = "new_releases";
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Metadata {
     pub country: Country,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct NewReleaseItem {
     #[serde(rename = "@timestamp")]
     pub timestamp: DateTime<Utc>,
@@ -32,6 +34,40 @@ pub struct NewReleaseItem {
     pub metadata: Metadata,
     pub artists: Vec<ArtistObject>,
 }
+
+pub struct NewRelease {
+    pub payload: AlbumItem,
+    pub country: Country,
+}
+
+pub struct NewReleases {
+    pub payload: Vec<AlbumItem>,
+    pub country: Country,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct NewReleaseId(NewReleaseItem);
+
+impl fmt::Display for NewReleaseId {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let NewReleaseId(item) = self;
+        write!(
+            f,
+            "{}-{}",
+            item.timestamp.format("%Y-%m-%d").to_string(),
+            item.id
+        )
+    }
+}
+
+//impl Serialize for NewReleaseId {
+//fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//where
+//S: Serializer,
+//{
+//serializer.serialize_str(&self.to_string())
+//}
+//}
 
 impl From<&NewRelease> for NewReleaseItem {
     fn from(new_release: &NewRelease) -> Self {
@@ -81,16 +117,6 @@ impl From<&NewReleases> for Vec<NewReleaseItem> {
     }
 }
 
-pub struct NewRelease {
-    pub payload: AlbumItem,
-    pub country: Country,
-}
-
-pub struct NewReleases {
-    pub payload: Vec<AlbumItem>,
-    pub country: Country,
-}
-
 impl NewRelease {
     pub async fn create_doc(&self) -> Result<(), Box<dyn std::error::Error>> {
         let es_client = EsClient::new().await?;
@@ -112,7 +138,11 @@ impl NewReleases {
         let new_releases = Vec::<NewReleaseItem>::from(self);
         let body: Vec<BulkOperation<_>> = new_releases
             .iter()
-            .map(|new_release| BulkOperation::index(new_release).into())
+            .map(|new_release| {
+                BulkOperation::index(new_release)
+                    .id(NewReleaseId(new_release.clone()).to_string())
+                    .into()
+            })
             .collect();
 
         es_client

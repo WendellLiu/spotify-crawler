@@ -51,7 +51,7 @@ pub struct ArtistObject {
     pub genres: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AlbumItem {
     pub id: String,
     pub name: String,
